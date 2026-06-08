@@ -24,9 +24,11 @@ export const useGeminiAssist = () => {
 		householdOnly: HouseholdRecord[],
 		cardOnly: CardRecord[],
 	): Promise<AiSuggestion[]> => {
-		const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+		const apiKey =
+			import.meta.env.VITE_GEMINI_API_KEY ||
+			localStorage.getItem("GEMINI_API_KEY");
 		if (!apiKey) {
-			setError("VITE_GEMINI_API_KEYが.envに設定されていません。");
+			setError("API_KEY_MISSING");
 			return [];
 		}
 

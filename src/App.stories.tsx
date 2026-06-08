@@ -82,6 +82,7 @@ type Story = StoryObj<typeof meta>;
 export const FullFlow: Story = {
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
+		localStorage.setItem("GEMINI_API_KEY", "mock_key");
 
 		// 1. 解析結果画面（テーブル）が表示されていることを確認
 		await expect(canvas.getByText("家計簿合計")).toBeInTheDocument();
@@ -114,6 +115,7 @@ export const FullFlow: Story = {
 		).closest(".ai-dashboard") as HTMLElement;
 		const dashboard = within(dashboardContainer);
 		await expect(dashboard.getByText("セブンイレブン")).toBeInTheDocument();
+		localStorage.removeItem("GEMINI_API_KEY");
 	},
 };
 
@@ -126,6 +128,7 @@ export const FileUploadFlow: Story = {
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
+		localStorage.setItem("GEMINI_API_KEY", "mock_key");
 
 		// 1. ファイル選択要素を取得
 		// FileUpload コンポーネント内の隠し input 要素を探す
@@ -181,6 +184,7 @@ export const FileUploadFlow: Story = {
 
 		// 7. AI分析が呼ばれることを確認
 		await expect(args.onAiScan).toHaveBeenCalled();
+		localStorage.removeItem("GEMINI_API_KEY");
 	},
 };
 

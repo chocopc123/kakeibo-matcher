@@ -1,4 +1,4 @@
-import { Clock, Sparkles } from "lucide-react";
+import { Clock, Settings, Sparkles } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import {
@@ -7,6 +7,7 @@ import {
 	useGeminiAssist,
 } from "../../hooks/useGeminiAssist";
 import type { ComparisonResult } from "../../types";
+import AiApiKeyModal from "../AiApiKeyModal/AiApiKeyModal";
 import AiHistoryPanel from "./AiHistoryPanel";
 import AiReviewDashboard from "./AiReviewDashboard";
 
@@ -40,6 +41,7 @@ const AiSuggestionSection: React.FC<AiSuggestionSectionProps> = ({
 	const [aiHistory, setAiHistory] = useState<AiReviewHistory[]>(initialHistory);
 	const [showAiDashboard, setShowAiDashboard] = useState(false);
 	const [showAiHistory, setShowAiHistory] = useState(false);
+	const [showApiKeyModal, setShowApiKeyModal] = useState(false);
 	const {
 		analyzeUnmatched: hookAnalyze,
 		isLoading: hookIsLoading,
@@ -79,6 +81,14 @@ const AiSuggestionSection: React.FC<AiSuggestionSectionProps> = ({
 	const handleAiScan = async (forceRescan = false) => {
 		if (!forceRescan && aiSuggestions.length > 0) {
 			setShowAiDashboard(true);
+			return;
+		}
+
+		const apiKey =
+			import.meta.env.VITE_GEMINI_API_KEY ||
+			localStorage.getItem("GEMINI_API_KEY");
+		if (!apiKey) {
+			setShowApiKeyModal(true);
 			return;
 		}
 
@@ -181,19 +191,38 @@ const AiSuggestionSection: React.FC<AiSuggestionSectionProps> = ({
 						alignItems: "center",
 					}}
 				>
-					<button
-						type="button"
-						onClick={() => handleAiScan(false)}
-						disabled={isLoading}
-						className="btn-ai"
-					>
-						<Sparkles size={20} className="sparkle-icon" />
-						{isLoading
-							? "AIが分析中..."
-							: aiSuggestions.length > 0
-								? `AIの提案を確認 (${aiSuggestions.length}件)`
-								: "Gemini AIで未照合項目をスキャン"}
-					</button>
+					<div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+						<button
+							type="button"
+							onClick={() => handleAiScan(false)}
+							disabled={isLoading}
+							className="btn-ai"
+						>
+							<Sparkles size={20} className="sparkle-icon" />
+							{isLoading
+								? "AIが分析中..."
+								: aiSuggestions.length > 0
+									? `AIの提案を確認 (${aiSuggestions.length}件)`
+									: "Gemini AIで未照合項目をスキャン"}
+						</button>
+						<button
+							type="button"
+							onClick={() => setShowApiKeyModal(true)}
+							style={{
+								background: "none",
+								border: "none",
+								cursor: "pointer",
+								padding: "0.5rem",
+								color: "#666",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+							title="APIキー設定"
+						>
+							<Settings size={20} />
+						</button>
+					</div>
 					{aiSuggestions.length > 0 && (
 						<button
 							type="button"
@@ -212,7 +241,7 @@ const AiSuggestionSection: React.FC<AiSuggestionSectionProps> = ({
 							最初から再スキャンする
 						</button>
 					)}
-					{aiError && (
+					{aiError && aiError !== "API_KEY_MISSING" && (
 						<p
 							style={{
 								color: "red",
@@ -266,6 +295,15 @@ const AiSuggestionSection: React.FC<AiSuggestionSectionProps> = ({
 					onClose={() => setShowAiHistory(false)}
 				/>
 			)}
+
+			<AiApiKeyModal
+				isOpen={showApiKeyModal}
+				onClose={() => setShowApiKeyModal(false)}
+				onSave={() => {
+					// ユーザーがAPIキーを保存したらスキャンを実行する
+					handleAiScan(true);
+				}}
+			/>
 		</>
 	);
 };

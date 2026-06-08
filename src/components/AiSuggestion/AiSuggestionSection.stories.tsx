@@ -116,6 +116,7 @@ export const PreScan: Story = {
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
+		localStorage.setItem("GEMINI_API_KEY", "mock_key");
 
 		const scanBtn = await canvas.findByRole("button", {
 			name: /スキャン/i,
@@ -140,6 +141,7 @@ export const PreScan: Story = {
 			},
 			{ timeout: 5000 },
 		);
+		localStorage.removeItem("GEMINI_API_KEY");
 	},
 };
 
@@ -168,6 +170,7 @@ export const PostScan: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
+		localStorage.setItem("GEMINI_API_KEY", "mock_key");
 
 		// ダッシュボードを開く
 		const checkBtn = await canvas.findByText(/AIの提案を確認/i);
@@ -207,6 +210,7 @@ export const PostScan: Story = {
 		await waitFor(() => {
 			expect(canvas.queryByText("AI サポートレビュー")).not.toBeInTheDocument();
 		});
+		localStorage.removeItem("GEMINI_API_KEY");
 	},
 };
 
@@ -242,6 +246,7 @@ export const NoSuggestionsFound: Story = {
 		const originalAlert = window.alert;
 		const alertMock = fn();
 		window.alert = alertMock;
+		localStorage.setItem("GEMINI_API_KEY", "mock_key");
 
 		const scanBtn = await canvas.findByText(/Gemini AIで未照合項目をスキャン/i);
 		await userEvent.click(scanBtn);
@@ -252,6 +257,7 @@ export const NoSuggestionsFound: Story = {
 			);
 		});
 		window.alert = originalAlert;
+		localStorage.removeItem("GEMINI_API_KEY");
 	},
 };
 
@@ -263,6 +269,7 @@ export const Rescan: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
+		localStorage.setItem("GEMINI_API_KEY", "mock_key");
 
 		// 再スキャンボタンをクリック
 		const rescanBtn = await canvas.findByText(/最初から再スキャンする/i);
@@ -272,6 +279,7 @@ export const Rescan: Story = {
 		await waitFor(() => {
 			expect(canvas.getByText("AI サポートレビュー")).toBeInTheDocument();
 		});
+		localStorage.removeItem("GEMINI_API_KEY");
 	},
 };
 

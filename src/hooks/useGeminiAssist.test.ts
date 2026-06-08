@@ -66,7 +66,7 @@ describe("useGeminiAssist", () => {
 
 		expect(suggestions).toEqual([]);
 		expect(result.current.error).toBe(
-			"VITE_GEMINI_API_KEYが.envに設定されていません。",
+			"API_KEY_MISSING",
 		);
 	});
 

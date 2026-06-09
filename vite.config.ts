@@ -16,7 +16,7 @@ const dirname =
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
 	plugins: [react()],
-	base: "/kakeibo-matcher/",
+	base: process.env.GITHUB_ACTIONS ? "/kakeibo-matcher/" : "/",
 	test: {
 		coverage: {
 			exclude: ["**/*.css", "**/*.stories.tsx", ".storybook/**"],

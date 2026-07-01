@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { HouseholdRecord } from "../types";
-import { type AiSuggestion, useGeminiAssist } from "./useGeminiAssist";
+import { type AiSuggestion, useGeminiAssist, getApiKey } from "./useGeminiAssist";
 
 const { generateContentMock, getGenerativeModelMock } = vi.hoisted(() => ({
 	generateContentMock: vi.fn(),
@@ -248,5 +248,33 @@ describe("useGeminiAssist", () => {
 		});
 
 		expect(result.current.error).toBe("AIの推論中にエラーが発生しました。");
+	});
+
+	describe("getApiKey", () => {
+		it("環境変数に有効なAPIキーがある場合、環境変数の値を返すこと", () => {
+			vi.stubEnv("VITE_GEMINI_API_KEY", "env-key");
+			localStorage.removeItem("GEMINI_API_KEY");
+			expect(getApiKey()).toBe("env-key");
+		});
+
+		it("環境変数が your_api_key_here で localStorage にキーがある場合、localStorage の値を返すこと", () => {
+			vi.stubEnv("VITE_GEMINI_API_KEY", "your_api_key_here");
+			localStorage.setItem("GEMINI_API_KEY", "local-key");
+			expect(getApiKey()).toBe("local-key");
+			localStorage.removeItem("GEMINI_API_KEY");
+		});
+
+		it("環境変数が空で localStorage にキーがある場合、localStorage の値を返すこと", () => {
+			vi.stubEnv("VITE_GEMINI_API_KEY", "");
+			localStorage.setItem("GEMINI_API_KEY", "local-key");
+			expect(getApiKey()).toBe("local-key");
+			localStorage.removeItem("GEMINI_API_KEY");
+		});
+
+		it("環境変数も localStorage も空の場合、nullを返すこと", () => {
+			vi.stubEnv("VITE_GEMINI_API_KEY", "");
+			localStorage.removeItem("GEMINI_API_KEY");
+			expect(getApiKey()).toBe(null);
+		});
 	});
 });

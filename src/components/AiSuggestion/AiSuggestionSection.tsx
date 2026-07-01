@@ -5,6 +5,7 @@ import {
 	type AiReviewHistory,
 	type AiSuggestion,
 	useGeminiAssist,
+	getApiKey,
 } from "../../hooks/useGeminiAssist";
 import type { ComparisonResult } from "../../types";
 import AiApiKeyModal from "../AiApiKeyModal/AiApiKeyModal";
@@ -84,9 +85,7 @@ const AiSuggestionSection: React.FC<AiSuggestionSectionProps> = ({
 			return;
 		}
 
-		const apiKey =
-			import.meta.env.VITE_GEMINI_API_KEY ||
-			localStorage.getItem("GEMINI_API_KEY");
+		const apiKey = getApiKey();
 		if (!apiKey) {
 			setShowApiKeyModal(true);
 			return;

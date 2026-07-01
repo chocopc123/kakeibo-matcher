@@ -16,6 +16,18 @@ export interface AiReviewHistory {
 	timestamp: number;
 }
 
+export const getApiKey = (): string | null => {
+	const envKey = import.meta.env.VITE_GEMINI_API_KEY;
+	if (envKey && envKey !== "your_api_key_here" && envKey.trim() !== "") {
+		return envKey.trim();
+	}
+	const localKey = localStorage.getItem("GEMINI_API_KEY");
+	if (localKey && localKey.trim() !== "") {
+		return localKey.trim();
+	}
+	return null;
+};
+
 export const useGeminiAssist = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -24,9 +36,7 @@ export const useGeminiAssist = () => {
 		householdOnly: HouseholdRecord[],
 		cardOnly: CardRecord[],
 	): Promise<AiSuggestion[]> => {
-		const apiKey =
-			import.meta.env.VITE_GEMINI_API_KEY ||
-			localStorage.getItem("GEMINI_API_KEY");
+		const apiKey = getApiKey();
 		if (!apiKey) {
 			setError("API_KEY_MISSING");
 			return [];
